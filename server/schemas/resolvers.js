@@ -38,6 +38,18 @@ const resolvers = {
             const token = signToken(user);
 
             return { token, user };
+        },
+
+        saveBook: async(parent, args, { user }) => {
+            if (user) {
+                const savedBook = await User.findOneAndUpdate(
+                    {_id: user._id},
+                    {$addToSet: {saveBook: args}},
+                    {new: true}
+                )
+                return savedBook;
+            }
+            throw new AuthenticationError('Not logged in');
         }
     }
 }
