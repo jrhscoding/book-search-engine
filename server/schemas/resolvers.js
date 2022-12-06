@@ -50,6 +50,20 @@ const resolvers = {
                 return savedBook;
             }
             throw new AuthenticationError('Not logged in');
+        },
+
+        removeBook: async (parent, args, { user }) => {
+            if (user) {
+                const removedBook = await User.findOneAndDelete(
+                    {_id: user._id},
+                    {$pull: {removeBook: args}},
+                    {new: true}
+                )
+                return removedBook;
+            }
+            throw new AuthenticationError('Not logged in');
         }
     }
 }
+
+module.exports = resolvers;
