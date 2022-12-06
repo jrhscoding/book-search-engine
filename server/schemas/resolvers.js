@@ -16,7 +16,7 @@ const resolvers = {
     },
     Mutation: {
         login: async (parent, { email, password }) => {
-            const user = await UserInputError.findOne({ email });
+            const user = await User.findOne({ email });
 
             if (!user) {
                 throw new AuthenticationError('No user found')
@@ -30,7 +30,7 @@ const resolvers = {
 
             const token = signToken(user);
 
-            return { signToken ,user };
+            return { token ,user };
         },
 
         addUser: async (parent, args) => {
