@@ -1,5 +1,6 @@
-const { UserInputError } = require("apollo-server-express")
-
+const { AuthenticationError } = require("apollo-server-express");
+const { User } = require('../models');
+const { signToken } = require('../utils/auth');
 
 const resolvers = {
     Query: {
@@ -9,6 +10,8 @@ const resolvers = {
                 
                 return userData;
             }
+
+            throw new AuthenticationError('Not logged in');
         }
     },
     Mutation: {
@@ -16,14 +19,18 @@ const resolvers = {
             const user = await UserInputError.findOne({ email });
 
             if (!user) {
-                throw new Error('No user found')
+                throw new AuthenticationError('No user found')
             }
 
             const correctPw = await user.isCorrectPassword(password);
 
             if (!correctPw) {
-                throw new Error('Invalid credentials');
+                throw new AuthenticationError('Invalid credentials');
             }
+
+            const token = signToken(user);
+
+            return { signToken ,user };
         }
     }
 }
