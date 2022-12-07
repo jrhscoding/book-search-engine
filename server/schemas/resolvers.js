@@ -6,7 +6,7 @@ const resolvers = {
     Query: {
         me: async (parent, args, context) => {
             if (context.user) {
-                const userData = await UserInputError.findOne({ _id: context.user._id})
+                const userData = await User.findOne({ _id: context.user._id})
                 
                 return userData;
             }
@@ -40,23 +40,24 @@ const resolvers = {
             return { token, user };
         },
 
-        saveBook: async(parent, args, { user }) => {
-            if (user) {
+        saveBook: async(parent, args, context) => {
+            console.log(context);
+            if (context.user) {
                 const savedBook = await User.findOneAndUpdate(
-                    {_id: user._id},
-                    {$addToSet: {saveBook: args}},
+                    {_id: context.user._id},
+                    {$addToSet: {savedBooks: args}},
                     {new: true}
                 )
                 return savedBook;
             }
-            throw new AuthenticationError('Not logged in');
+            throw new AuthenticationError('Not logged in I guess?');
         },
 
         removeBook: async (parent, args, { user }) => {
             if (user) {
                 const removedBook = await User.findOneAndDelete(
                     {_id: user._id},
-                    {$pull: {removeBook: args}},
+                    {$pull: {savedBooks: args}},
                     {new: true}
                 )
                 return removedBook;
